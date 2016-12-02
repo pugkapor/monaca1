@@ -1,0 +1,249 @@
+		<!DOCTYPE HTML>
+		<html>
+		<head>
+		    <meta charset="utf-8">
+		    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, user-scalable=no">
+		    <meta http-equiv="Content-Security-Policy" content="default-src * data:; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+		    <script src="components/loader.js"></script>
+		    <link rel="stylesheet" href="components/loader.css">
+		    <link rel="stylesheet" href="css/style.css">
+			<!-- META SECTION -->
+			<title></title>            
+			<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+			<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+			
+			<link rel="icon" href="favicon.ico" type="image/x-icon" />
+			<!-- END META SECTION -->
+			
+			<!-- CSS INCLUDE -->        
+			<link rel="stylesheet" type="text/css" id="theme" href="css/theme-default.css"/>
+			<!-- EOF CSS INCLUDE -->   
+			<!--
+			<script src="cordova.js"></script>
+			-->
+			<script src="js/openfb.js"></script>
+			
+		</head>
+		<body>
+			
+			<div class="login-container">
+			
+				<table width="100%" border="0" cellspacing="10" cellpadding="10">
+			  <tr>
+				<td height="150" align="center" valign="middle">&nbsp;</td>
+			  </tr>				  
+				<tr>
+					<td align="center" valign="middle">
+						<div class="form-group">
+							<div class="col-md-6">
+								<img src="./img/logo.png" alt=""/> 
+							</div>
+					</td>
+				  </tr>
+				  <tr>
+					<td height="100" align="center" valign="middle">&nbsp;</td>
+				  </tr>
+				  <tr>
+					<td align="center" valign="middle">
+						<div class="form-group">
+							<div class="col-md-6">
+								<class="btn btn-link btn-block">
+							</div>
+							<div class="col-md-6">
+								<button class="btn btn-info btn-block btn-facebook  btn-lg" onclick="login();"><span class="fa fa-facebook"></span>เข้าสู่ระบบผ่าน Facebook</button>
+							</div>
+						<div class="login-subtitle">
+							<p></P>
+						</div>
+					</td>
+				  </tr>
+				</table>
+							
+			</div>
+<script>
+	var oUser = null;
+	var lFacebook = true;
+	var oFacebook = null;
+	var oTemp = null;
+	var cWWWHeader = "http://m.mKorsornor.com/";	
+     // Defaults to sessionStorage for storing the Facebook token
+    //  Uncomment the line below to store the Facebook token in localStorage instead of sessionStorage
+    //  openFB.init({appId: 'YOUR_FB_APP_ID', tokenStore: window.localStorage});
+	function _getUser() {
+		alert( "_getUser()" );
+		var cParam = cWWWHeader + "php/controlDB.php?method=getMember& param1="+oUser.id;
+		//alert("B");
+		//alert( cParam );
+		$.get( cParam )
+		.success(function(data) {
+			//alert( data );
+			oTemp  = JSON.parse( data );
+			//alert( oTemp.id );
+			if ( oTemp.total > 0 ) {							
+				oUser.path="mainPage";
+				window.location.assign("mainPage.html");
+				pageReport();					
+			} else {
+				oUser.path="mainPageX";
+				window.location.assign("mainPage.html");
+				pageReport();			
+			}
+		}).fail(function() {
+				alert("การเชื่อมต่อกับ facebook มีปัญหา โปรดตรวจสอบการเชื่อมต่อ และเข้าสู่ facebook ใหม่อีกครั้ง");				
+				//window.location.assign("mainPage.html");
+				//pageReport();			
+		  })
+	}	
+	function pageReport() {
+	//alert("A");
+		//alert( oUser.path );
+		//alert("B");
+		switch( oUser.path ) {
+			case "mainPage":
+				localStorage.setItem("cFBid", oUser.id);
+				localStorage.setItem("cFBname", oUser.name);
+				localStorage.setItem("cPath", "mainPage");
+				localStorage.setItem("lFacebook", lFacebook);
+				localStorage.setItem("academyCode", oUser.academy_code);
+				localStorage.setItem("cType", oUser.type);
+				//localStorage.setItem("oTemp", oTemp);
+				break;
+			case "mainPageX":
+				//alert( oUser.id );
+				localStorage.setItem("cFBid", oUser.id);
+				localStorage.setItem("cFBname", oUser.name);
+				localStorage.setItem("cPath", "mainPage");
+				localStorage.setItem("lFacebook", lFacebook );
+				localStorage.setItem("academyCode", "0");
+				localStorage.setItem("cType", "G");
+				//localStorage.setItem("oTemp", {} );
+				break;
+		}
+	}	
+	function _login() {
+		login();
+	}
+    function login() {
+    	var xId = localStorage.getItem("cFBid");
+		//alert( "A" );
+		//alert( xId=="null" );
+		//alert();
+		//xId = null;
+		 if ( lFacebook) {
+			//alert( xId == undefined  );
+			if ( xId == "" || xId === null || xId == "null") {
+				//alert("B");
+				openFB.init({appId: '1844410182513825'});
+			} else {	
+				//alert("A");
+				oUser = new Object();
+				oUser.id = localStorage.getItem("cFBid");
+				oUser.name = localStorage.getItem("cFBname");
+				oUser.cType = localStorage.getItem("cType");
+				oUser.path="mainPage";			
+				//_getUser();
+				localStorage.setItem("cFBid", oUser.id);
+				localStorage.setItem("cFBname", oUser.name);
+				localStorage.setItem("cPath", "mainPage");
+				localStorage.setItem("lFacebook", lFacebook);
+				window.location.assign("mainPage.html");
+				return;
+			}
+		 } else {
+			oUser = new Object();
+			oUser.id = "114233309038829";
+			oUser.name = "jacky yo";
+			oUser.path="mainPage";
+			//_getUser();
+			localStorage.setItem("cFBid", oUser.id);
+			localStorage.setItem("cFBname", oUser.name);
+			localStorage.setItem("cPath", "mainPage");
+			localStorage.setItem("lFacebook", lFacebook);	
+			window.location.assign("mainPage.html");			
+			return;
+		 }
+        openFB.login(
+                function(response) {
+                    if(response.status === 'connected') {
+                        //alert('Facebook login succeeded, got access token: ' + response.authResponse.accessToken);
+						//oFacebook = response;
+						//alert( "QQQQ" );
+                        getInfo();
+                    } else {
+                        alert('Facebook login failed: ' + response.error);
+                    }
+                }, {scope: 'email,publish_actions,public_profile'});
+    }
+    function getInfo() {
+        openFB.api({
+            path: '/me',
+            success: function(data) {
+                //console.log(JSON.stringify(data));
+                //document.getElementById("userName").innerHTML = data.name;
+                //document.getElementById("userPic").src = 'http://graph.facebook.com/' + data.id + '/picture?type=small';
+                //alert( data );
+                //oUser = JSON.stringify(data);
+				oUser = data;//share();
+                //alert( oUser.id );
+				localStorage.setItem("cFBid", oUser.id);
+				localStorage.setItem("cFBname", oUser.name);
+				localStorage.setItem("cPath", "mainPage");
+				localStorage.setItem("lFacebook", lFacebook);
+				localStorage.setItem("academyCode", oUser.academy_code);
+				localStorage.setItem("cType", oUser.type);
+                //oUser.path="mainPage";
+				//alert("BBBBBB");
+				//_getUser();
+                window.location.assign("mainPage.html");
+				//pageReport();
+            },
+            error: errorHandler});
+    }
+    function share() {
+        openFB.api({
+            method: 'POST',
+            path: '/me/feed',
+            params: {
+                message: 'ขอแสดงความยินดี คุณได้รับการลงทะเบียนเข้าใช้ mKorsornor'
+            },
+            success: function() {
+                alert('the item was posted on Facebook');
+            },
+            error: errorHandler});
+    }
+    function readPermissions() {
+        openFB.api({
+            method: 'GET',
+            path: '/me/permissions',
+            success: function(result) {
+                alert(JSON.stringify(result.data));
+            },
+            error: errorHandler
+        });
+    }
+    function revoke() {
+        openFB.revokePermissions(
+                function() {
+                    alert('Permissions revoked');
+                },
+                errorHandler);
+    }
+    function logout() {
+        openFB.logout(
+                function() {
+                    alert('Logout successful');
+                },
+                errorHandler);
+    }
+    function errorHandler(error) {
+        alert(error.message);
+    }
+</script>
+			<!-- START PLUGINS -->
+			<script type="text/javascript" src="js/plugins/jquery/jquery.min.js"></script>
+			<script type="text/javascript" src="js/plugins/jquery/jquery-ui.min.js"></script>
+			<script type="text/javascript" src="js/plugins/bootstrap/bootstrap.min.js"></script>   
+						
+			<!-- END PLUGINS -->
+		</body>
+	</html>
